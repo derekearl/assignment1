@@ -18,12 +18,16 @@ header{
   font-size: xx-large;
 }
 
-.navigation{
+nav{
   display: flex;
   justify-content: space-between;
   background-color: black;
   color: white;
   font-family: 'Bruno Ace SC';
+}
+
+a:visited{
+  color: #01B0D3;
 }
 
 h1{
