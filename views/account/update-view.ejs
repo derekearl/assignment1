@@ -1,0 +1,44 @@
+<%# Content Heading %>
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <%  }) %>
+   </ul>
+<% } %>
+
+<form class="form accountForm" action="/account/update-view" method="post">
+    <label for="account_firstname">First Name:</label>
+    <input type="text" name="account_firstname" id="account_firstname" required value="<%= locals.account_firstname %>"><br>
+    <label for="account_lastname">Last Name:</label>
+    <input type="text" name="account_lastname" id="account_lastname" required value="<%= locals.account_lastname %>"><br>
+    <label for="account_email">Email:</label><br>
+    <input type="email" name="account_email" id="account_email" required required placeholder="Enter a valid email address" value="<%= locals.account_email %>"><br>
+    <input type="hidden" name="account_id"
+    <% if(locals.account_id) { %> 
+        value="<%= locals.account_id %>"
+    <% } %>>
+    <button type="submit" class="formButton">Update</button>
+</form>
+
+<h2 class="passwordTitle">Update Password</h2>
+<form class="form passwordForm" action="/account/update-view" method="post">
+    <label for="account_password">Password:</label>
+    <input type="password" name="account_password" id="account_password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$">
+    <p>Passwords must be a minimum of 12 characters and include 1 capital letter, 1 number, and 1 special character.</p>
+    <span class="passwordToggle">Show Password</span>
+    <% if(locals.account_id) { %> 
+        value="<%= locals.account_id %>"
+    <% } %>>
+    <button type="submit" class="formButton">Update</button>
+</form>
+
+<noscript>JavaScript must be enabled to use this page.</noscript>
