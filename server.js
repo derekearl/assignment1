@@ -41,24 +41,7 @@ app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-
 app.use(cookieParser())
 //Check to see if JWT is valid
 app.use(utilities.checkJWTToken)
-//Allows the logged in check to be used in header
-app.use((req, res, next) => {
-  if(res.locals.loggedin) {
-    res.locals.accountCheck = true
-  } else {
-    res.locals.accountCheck = false
-  }
-  next()
-})
-//Allow the jwt to be used in view
-app.use((req, res, next) => {
-  if(res.locals.loggedin) {
-    let token = req.cookies.jwt
-    res.locals.user = utilities.decodeToken(token)
-  }
 
-  next()
-})
 /* ***********************
  * View Engine and Templates
  *************************/
@@ -78,7 +61,7 @@ app.use("/inv", require("./routes/inventoryRoute"))
 app.use("/account", require("./routes/accountRoute"))
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
-  next({status: 404, message: 'Sorry, we cannot find that page.'})
+  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
 })
 
 /* ***********************
@@ -88,7 +71,7 @@ app.use(async (req, res, next) => {
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Back the truck up something done fell out'}
+  if(err.status == 404){ message = err.message} else {message = 'Something went topsy-turvy'}
   res.render("errors/error", {
     title: err.status || 'Server Error',
     message,

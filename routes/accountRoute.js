@@ -19,5 +19,9 @@ router.get("/update-account/:accId", utilities.handleErrors(accountController.bu
 router.post('/register', regValidate.registationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount))
 // Process the login attempt
 router.post("/login", regValidate.loginRules(), regValidate.checkLogData, utilities.handleErrors(accountController.accountLogin))
+//Route to send update info
+router.post("/updateAccount", regValidate.updateAccountRules(), regValidate.checkUpdateData, utilities.handleErrors(accountController.accountUpdate))
+//Route to send update info
+router.post("/updatePassword", regValidate.updateAccountPasswordRules(), regValidate.checkUpdatePasswordData, utilities.handleErrors(accountController.accountPasswordUpdate))
 
 module.exports = router;
