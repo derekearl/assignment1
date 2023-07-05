@@ -16,7 +16,7 @@ router.get("/logout", utilities.handleErrors(accountController.accountLogout))
 //Route to update account
 router.get("/update-account/:accId", utilities.handleErrors(accountController.buildEditAccount))
 //Route to send registration info
-router.post('/register', regValidate.registationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount))
+router.post("/register", regValidate.registationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount))
 // Process the login attempt
 router.post("/login", regValidate.loginRules(), regValidate.checkLogData, utilities.handleErrors(accountController.accountLogin))
 //Route to send update info

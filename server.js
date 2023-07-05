@@ -17,6 +17,12 @@ const utilities = require("./utilities/")
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(cookieParser())
+//Check to see if JWT is valid
+app.use(utilities.checkJWTToken)
+
 /* ***********************
  * Middleware
  * ************************/
@@ -36,11 +42,7 @@ app.use(function(req, res, next){
   res.locals.messages = require('express-messages')(req, res)
   next()
 })
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-app.use(cookieParser())
-//Check to see if JWT is valid
-app.use(utilities.checkJWTToken)
+
 
 /* ***********************
  * View Engine and Templates
@@ -61,7 +63,7 @@ app.use("/inv", require("./routes/inventoryRoute"))
 app.use("/account", require("./routes/accountRoute"))
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
-  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
+  next({status: 404, message: 'Sorry, we do not seem to have that page.'})
 })
 
 /* ***********************
@@ -71,7 +73,7 @@ app.use(async (req, res, next) => {
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Something went topsy-turvy'}
+  if(err.status == 404){ message = err.message} else {message = 'Uh-oh back the truck on up, something done fell out!'}
   res.render("errors/error", {
     title: err.status || 'Server Error',
     message,
