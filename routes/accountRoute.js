@@ -16,9 +16,9 @@ router.get("/logout", utilities.handleErrors(accountController.accountLogout))
 //Route to update account
 router.get("/update-account/:accId", utilities.checkLogin, utilities.handleErrors(accountController.buildEditAccount))
 //Route to messages center
-router.get('/messages/:accId', utilities.checkLogin, utilities.handleErrors(accountController.buildMessages))
+//router.get('/messages/:accId', utilities.checkLogin, utilities.handleErrors(accountController.buildMessages))
 //Route to new message
-router.get('/send-message/:accId', utilities.checkLogin, utilities.handleErrors(accountController.buildNewMessage))
+//router.get('/send-message/:accId', utilities.checkLogin, utilities.handleErrors(accountController.buildNewMessage))
 //Route to send registration info
 router.post('/register', regValidate.registationRules(), regValidate.checkRegData, utilities.handleErrors(accountController.registerAccount))
 // Process the login attempt
