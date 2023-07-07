@@ -150,11 +150,11 @@ Util.checkAccountType = (req, res, next) => {
       next()
     } else {
       req.flash("notice", "You don't have clearance to view that page")
-      return res.redirect("/")
+    return res.redirect("/account/login")
     }
   } else {
-    req.flash("notice", "You don't have clearance to view that page")
-    return res.redirect("/")
+    req.flash("notice", "Please login")
+    return res.redirect("/account/login")
   }
 }
 
