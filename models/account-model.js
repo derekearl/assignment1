@@ -31,7 +31,7 @@ async function checkExistingEmail(account_email){
 async function getAccountByEmail (account_email) {
   try {
     const result = await pool.query(
-      'SELECT  account_id, account_firstname, account_lastname, account_email, account_type, account_password FROM account WHERE account_email = $1',
+      'SELECT account_id, account_firstname, account_lastname, account_email, account_type, account_password FROM account WHERE account_email = $1',
       [account_email])
     return result.rows[0]
   } catch (error) {
@@ -79,4 +79,30 @@ async function updateAccountPassword(account_password, account_id){
   }
 }
 
-module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountById, updateAccount, updateAccountPassword}
+/* *****************************
+*   Add new message
+* *************************** */
+async function newMessage(message_to, message_subject, message_body, message_from){
+  try {
+      const sql = "INSERT INTO message (message_subject, message_body, message_to, message_from) VALUES ($1, $2, $3, $4) RETURNING *"
+      return await pool.query(sql, [message_subject, message_body, message_to, message_from])
+  } catch (error) {
+      return error.message
+  }
+}
+
+/* *****************************
+* Return messages not read using messages_to
+* ***************************** */
+async function getUnreadMessages (message_to) {
+  try {
+    const result = await pool.query(
+      'SELECT message_id, message_subject, message_body, message_created, message_to, message_from, message_read, message_archived FROM message WHERE message_to = $1 AND message_read = false',
+      [message_to])
+    return result.rows
+  } catch (error) {
+    return new Error("No matching email found")
+  }
+}
+
+module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountById, updateAccount, updateAccountPassword, newMessage, getUnreadMessages}
