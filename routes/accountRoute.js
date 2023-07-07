@@ -27,7 +27,5 @@ router.post("/login", regValidate.loginRules(), regValidate.checkLogData, utilit
 router.post("/updateAccount", utilities.checkLogin, regValidate.updateAccountRules(), regValidate.checkUpdateData, utilities.handleErrors(accountController.accountUpdate))
 //Route to send update info
 router.post("/updatePassword", utilities.checkLogin, regValidate.updateAccountPasswordRules(), regValidate.checkUpdatePasswordData, utilities.handleErrors(accountController.accountPasswordUpdate))
-//Route to send a new message
-//router.post('/send_message', utilities.checkLogin, regValidate.newMessageRules(), regValidate.checkNewMessageData, utilities.handleErrors(accountController.getNewMessage) )
 
 module.exports = router;
