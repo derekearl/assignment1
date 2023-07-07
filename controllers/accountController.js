@@ -56,7 +56,6 @@ async function registerAccount(req, res) {
     account_email,
     hashedPassword
   )
-    console.log(regResult)
   if (regResult) {
     req.flash(
       "notice",
@@ -72,7 +71,6 @@ async function registerAccount(req, res) {
     res.status(501).render("account/register", {
       title: "Registration",
       nav,
-      errors: null,
     })
   }
 }
@@ -84,7 +82,6 @@ async function accountLogin(req, res) {
   let nav = await utilities.getNav()
   const { account_email, account_password } = req.body
   const accountData = await accountModel.getAccountByEmail(account_email)
-  console.log(accountData)
   if (!accountData) {
     req.flash("notice", "Please check your credentials and try again.")
     res.status(400).render("account/login", {
@@ -100,6 +97,8 @@ async function accountLogin(req, res) {
    delete accountData.account_password
    const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
    res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+   res.locals.accountData = accountData
+   res.locals.loggedin = 1
    return res.redirect("/account/")
    } 
    throw new Error('Password is wrong')
@@ -115,10 +114,13 @@ async function accountLogin(req, res) {
 * *************************************** */
 async function buildAccountManagement(req, res, next) {
   let nav = await utilities.getNav()
+  const messages = await accountModel.getUnreadMessages(res.locals.accountData.account_id)
+  const count = messages.length
   res.render("./account/logged-in", {
     title: "Account Management",
     nav,
     errors: null,
+    count: count,
   })
 }
 
@@ -153,6 +155,65 @@ async function buildEditAccount(req, res, next) {
 }
 
 /* ****************************************
+*  Deliver messages view
+* *************************************** */
+async function buildMessages(req, res, next) {
+  let nav = await utilities.getNav()
+  const message_from = parseInt(req.params.accId);
+  const messages = await accountModel.getUnreadMessages(message_from)
+  console.log(messages)
+  res.render("account/messages", {
+    title: `${res.locals.accountData.account_firstname} ${res.locals.accountData.account_lastname} Inbox`,
+    nav,
+    errors: null,
+    message_from: message_from
+  })
+}
+/* ****************************************
+*  Deliver new message view
+* *************************************** */
+async function buildNewMessage(req, res, next) {
+  let nav = await utilities.getNav()
+  const message_from = parseInt(req.params.accId);
+  res.render("account/send-message", {
+    title: 'New Message',
+    nav,
+    errors: null,
+    message_from: message_from
+  })
+}
+/* ****************************************
+*  Send new message
+* *************************************** */
+async function getNewMessage(req, res) {
+  let nav = await utilities.getNav()
+  const { message_to, message_subject, message_body, message_from } = req.body
+
+  console.log('test')
+  const messageResult = await accountModel.newMessage(
+    message_to,
+    message_subject,
+    message_body, 
+    message_from
+  )
+  console.log('test2')
+  if (messageResult) {
+    req.flash(
+      "notice",
+      `Congratulations, you\'ve sent a new message.`
+    )
+    res.redirect(`/account/messages/${message_from}`)
+  } else {
+    req.flash("notice", "Sorry, the  message failed.")
+    res.status(501).render(`/account/messages`, {
+      title: `${res.locals.accountData.account_firstname} ${res.locals.accountData.account_lastname} Inbox`,
+      nav,
+      message_from: message_from
+    })
+  }
+}
+
+/* ****************************************
 *  Update account info
 * *************************************** */
 async function accountUpdate(req, res) {
@@ -167,6 +228,11 @@ async function accountUpdate(req, res) {
   )
 
   if (updateResult) {
+    let account_type = res.locals.accountData.account_type
+    let accountData = { account_id: parseInt(account_id), account_firstname, account_lastname, account_email, account_type }
+    res.clearCookie("jwt")
+    const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
+    res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
     req.flash(
       "notice",
       `Congratulations, you\'ve updated your account ${account_firstname} ${account_lastname}.`
@@ -187,7 +253,7 @@ async function accountUpdate(req, res) {
 async function accountPasswordUpdate(req, res) {
   let nav = await utilities.getNav()
   const { account_password, account_id } = req.body
-
+  console.log(account_id)
   // Hash the password before storing
   let hashedPassword
   try {
@@ -220,4 +286,4 @@ async function accountPasswordUpdate(req, res) {
   }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, accountLogout, buildEditAccount, accountUpdate, accountPasswordUpdate }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, accountLogout, buildEditAccount, accountUpdate, accountPasswordUpdate, buildMessages, buildNewMessage, getNewMessage }
