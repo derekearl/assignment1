@@ -118,6 +118,32 @@ validate.updateAccountRules = () => {
       }),
   ]
 }
+
+/*  **********************************
+ *  New Message Validation Rules
+ * ********************************* */
+validate.newMessageRules = () => {
+  return [
+    // Recipient is required and must be a number
+    body("message_to")
+      .trim()
+      .isNumeric()
+      .withMessage("Please select a recipient."), // on error this message is sent.
+
+    // Subject is required and must be string
+    body("message_subject")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Please provide a subject."), // on error this message is sent.
+
+    // Body is required and must be string
+    body("message_body")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Please provide a body."), // on error this message is sent.
+  ]
+}
+
   /* ******************************
  * Check data and return errors or continue to registration
  * ***************************** */
@@ -164,7 +190,7 @@ validate.checkLogData = async (req, res, next) => {
  * Check Update data
  * ***************************** */
   validate.checkUpdateData = async (req, res, next) => {
-    const { account_firstname, account_lastname, account_email } = req.body
+    const { account_firstname, account_lastname, account_email, account_id } = req.body
     let errors = []
     errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -176,6 +202,7 @@ validate.checkLogData = async (req, res, next) => {
         account_firstname,
         account_lastname,
         account_email,
+        account_id,
       })
       return
     }
@@ -186,7 +213,7 @@ validate.checkLogData = async (req, res, next) => {
  * Check updated password data
  * ***************************** */
 validate.checkUpdatePasswordData = async (req, res, next) => {
-  const { account_firstname, account_lastname, account_email } = res.locals.accountData
+  const { account_firstname, account_lastname, account_email, account_id } = res.locals.accountData
   let errors = []
   errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -198,10 +225,33 @@ validate.checkUpdatePasswordData = async (req, res, next) => {
       account_firstname,
       account_lastname,
       account_email,
+      account_id,
     })
     return
   }
   next()
 }
+
+  /* ******************************
+ * Check data and return errors or continue to sending new message
+ * ***************************** */
+  validate.checkNewMessageData = async (req, res, next) => {
+    const { message_to, message_subject, message_body } = req.body
+    let errors = []
+    errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      let nav = await utilities.getNav()
+      res.render("account/send-message", {
+        errors,
+        title: "New Message",
+        nav,
+        message_to,
+        message_subject,
+        message_body,
+      })
+      return
+    }
+    next()
+  }
 
 module.exports = validate
