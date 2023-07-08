@@ -61,7 +61,7 @@ app.use("/inv", require("./routes/inventoryRoute"))
 app.use("/account", require("./routes/accountRoute"))
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
-  next({status: 404, message: 'Sorry, we appear to not have page.'})
+  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
 })
 
 /* ***********************
@@ -71,7 +71,7 @@ app.use(async (req, res, next) => {
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'uh-oh back the truck on up, something done fell out!'}
+  if(err.status == 404){ message = err.message} else {message = 'Uh-oh back the truck on up, something done fell out.'}
   res.render("errors/error", {
     title: err.status || 'Server Error',
     message,

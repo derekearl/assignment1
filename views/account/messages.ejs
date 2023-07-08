@@ -1,0 +1,21 @@
+<%# Content Heading %>
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <%  }) %>
+   </ul>
+<% } %>
+
+<ul>
+    <li><p><a href="/account/send-message/<%= locals.message_from %>">Create New Message</a></p></li>
+    <li><p><a href="">View 1 Archived Messages</a></p></li>
+</ul>

@@ -1,0 +1,35 @@
+<%# Content Heading %>
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <%  }) %>
+   </ul>
+<% } %>
+
+<p>This is an internal system only. Recipients are limited to the three generic accounts.</p>
+<div class="yellow">All inputs are required.</div>
+
+<form class="form" action="/account/send_message" method="post">
+    <label for="message_to">To:</label><br>
+    <select name="message_to" id="message_to">
+        <option value="15">Admin Manager</option>
+        <option value="14">Happy Employee</option>
+        <option value="13">Basic Client</option>
+    </select><br>
+    <label for="message_subject">Subject:</label><br>
+    <input type="text" name="message_subject" id="message_subject" required pattern="^[a-zA-Z ]+$" value="<%= locals.message_subject %>"><br><br>
+    <label for="message_body">Message:</label><br>
+    <textarea name="message_body" id="message_body" rows="10" cols="30" required><%= locals.message_body %></textarea><br><br>
+    <input type="hidden" name="message_from" value="<%= locals.message_from %>">
+
+    <button type="submit" class="formButton">Send</button>
+</form>
