@@ -16,6 +16,7 @@ const baseController = require("./controllers//baseController")
 const utilities = require("./utilities/")
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
+const pgp = require('pg-promise')();
 
 /* ***********************
  * Middleware
