@@ -27,5 +27,11 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "pnpm": {
+    "overrides": {
+      "got@<11.8.5": ">=11.8.5",
+      "semver@<7.5.2": ">=7.5.2"
+    }
   }
 }

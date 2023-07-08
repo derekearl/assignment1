@@ -9,6 +9,7 @@
 const session = require("express-session")
 const pool = require('./database/')
 const express = require("express")
+const env = require("dotenv").config()
 const app = express() 
 expressLayouts = require("express-ejs-layouts")
 const baseController = require("./controllers//baseController")
