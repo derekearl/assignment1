@@ -10,7 +10,7 @@ const session = require("express-session")
 const pool = require('./database/')
 const express = require("express")
 const env = require("dotenv").config()
-const app = express() 
+const app = express()
 expressLayouts = require("express-ejs-layouts")
 const baseController = require("./controllers//baseController")
 const utilities = require("./utilities/")
@@ -71,7 +71,7 @@ app.use(async (req, res, next) => {
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav()
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Uh-oh back the truck on up, something done fell out.'}
+  if(err.status == 404){ message = err.message} else {message = 'Something went topsy-turvy'}
   res.render("errors/error", {
     title: err.status || 'Server Error',
     message,
