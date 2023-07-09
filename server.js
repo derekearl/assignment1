@@ -69,13 +69,13 @@ app.use(async (req, res, next) => {
 * Place after all other middleware
 *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Something went topsy-turvy'}
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
-    message,
-    nav
+    let nav = await utilities.getNav()
+    console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+    if(err.status == 404){ message = err.message} else {message = 'Uh-oh back the truck on up something done fell out.'}
+    res.render("errors/error", {
+      title: err.status || 'Server Error',
+      message,
+      nav
   })
 })
 /* ***********************
