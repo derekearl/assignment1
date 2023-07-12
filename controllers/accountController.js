@@ -160,13 +160,34 @@ async function buildEditAccount(req, res, next) {
 async function buildMessages(req, res, next) {
   let nav = await utilities.getNav()
   const message_from = parseInt(req.params.accId);
-  const messages = await accountModel.getUnreadMessages(message_from)
+  const messages = await accountModel.getMessagesAndName(message_from)
   console.log(messages)
+  const archMessages = await accountModel.getArchivedMessages(message_from)
+  console.log(archMessages)
+  const count = archMessages.length
   res.render("account/messages", {
     title: `${res.locals.accountData.account_firstname} ${res.locals.accountData.account_lastname} Inbox`,
     nav,
     errors: null,
-    message_from: message_from
+    message_from: message_from,
+    count: count,
+    messagesArray: messages
+  })
+}
+
+/* ****************************************
+*  Deliver archived messages view
+* *************************************** */
+async function buildArchivedMessages(req, res, next) {
+  let nav = await utilities.getNav()
+  const message_to = parseInt(req.params.accId);
+  const archMessages = await accountModel.getArchivedMessages(message_to)
+  console.log(archMessages)
+  res.render("account/archived-messages", {
+    title: `${res.locals.accountData.account_firstname} ${res.locals.accountData.account_lastname} Archives`,
+    nav,
+    errors: null,
+    messagesArray: archMessages
   })
 }
 /* ****************************************
@@ -174,13 +195,73 @@ async function buildMessages(req, res, next) {
 * *************************************** */
 async function buildNewMessage(req, res, next) {
   let nav = await utilities.getNav()
-  const message_from = parseInt(req.params.accId);
+  const message_from = res.locals.accountData.account_id
   res.render("account/send-message", {
     title: 'New Message',
     nav,
     errors: null,
     message_from: message_from
   })
+}
+
+/* ****************************************
+*  Deliver reply message view
+* *************************************** */
+async function buildReplyMessage(req, res, next) {
+  let nav = await utilities.getNav()
+  const message_from = res.locals.accountData.account_id
+  const message_id = parseInt(req.params.messId);
+  const message = await accountModel.getMessage(message_id)
+  res.render("account/reply-message", {
+    title: `RE: ${message.message_subject}`,
+    nav,
+    errors: null,
+    message_from: message_from,
+    message_to: message.message_from,
+    message_subject: `RE: ${message.message_subject}`,
+    message_body: `\n\n // Previous Message //\n${message.message_body}`
+  })
+}
+/* ****************************************
+*  Deliver view message view
+* *************************************** */
+async function buildViewMessage(req, res, next) {
+  let nav = await utilities.getNav()
+  const message_id = parseInt(req.params.messId);
+  const message = await accountModel.getMessage(message_id)
+  res.render("account/view-message", {
+    title: message.message_subject,
+    nav,
+    errors: null,
+    message: message
+  })
+}
+/* ****************************************
+*  Mark message as read
+* *************************************** */
+async function messageRead(req, res, next) {
+  const message_id = parseInt(req.params.messId);
+  await accountModel.updateMessageRead(message_id);
+  req.flash("notice", "You have successfully marked a message as read")
+  res.redirect(`/account/messages/${res.locals.accountData.account_id}`)
+}
+/* ****************************************
+*  Archive message
+* *************************************** */
+async function messageArchived(req, res, next) {
+  const message_id = parseInt(req.params.messId);
+  await accountModel.updateMessageArchive(message_id);
+  req.flash("notice", "You have successfully archived a message")
+  res.redirect(`/account/messages/${res.locals.accountData.account_id}`)
+}
+/* ****************************************
+*  Delete message
+* *************************************** */
+async function messageDelete(req, res, next) {
+  const message_id = parseInt(req.params.messId);
+  await accountModel.deleteMessage(message_id);
+  req.flash("notice", "You have successfully deleted a message")
+  res.redirect(`/account/messages/${res.locals.accountData.account_id}`)
 }
 /* ****************************************
 *  Send new message
@@ -189,7 +270,6 @@ async function getNewMessage(req, res) {
   let nav = await utilities.getNav()
   const { message_to, message_subject, message_body, message_from } = req.body
 
-  console.log('test')
   const messageResult = await accountModel.newMessage(
     message_to,
     message_subject,
@@ -286,4 +366,7 @@ async function accountPasswordUpdate(req, res) {
   }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, accountLogout, buildEditAccount, accountUpdate, accountPasswordUpdate, buildMessages, buildNewMessage, getNewMessage }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement, 
+  accountLogout, buildEditAccount, accountUpdate, accountPasswordUpdate, buildMessages, buildNewMessage, 
+  getNewMessage, buildViewMessage , buildReplyMessage, messageRead, messageArchived, buildArchivedMessages, 
+  messageDelete}

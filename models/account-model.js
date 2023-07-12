@@ -94,10 +94,86 @@ async function newMessage(message_to, message_subject, message_body, message_fro
 /* *****************************
 * Return messages not read using messages_to
 * ***************************** */
-async function getUnreadMessages (message_to) {
+async function getUnreadMessages(message_to) {
   try {
     const result = await pool.query(
       'SELECT message_id, message_subject, message_body, message_created, message_to, message_from, message_read, message_archived FROM message WHERE message_to = $1 AND message_read = false',
+      [message_to])
+    return result.rows
+  } catch (error) {
+    return new Error("No message found")
+  }
+}
+
+/* *****************************
+* Return messageusing messages_id
+* ***************************** */
+async function getMessage (message_id) {
+  try {
+    const result = await pool.query(
+      'SELECT message_id, message_subject, message_body, message_created, message_to, message_from, message_read, message_archived FROM message WHERE message_id = $1',
+      [message_id])
+    return result.rows[0]
+  } catch (error) {
+    return new Error("No message found")
+  }
+}
+/* *****************************
+*   Update message as read
+* *************************** */
+async function updateMessageRead(message_id){
+  try {
+      const sql = "UPDATE public.message SET message_read = true WHERE message_id = $1 RETURNING *"
+      const data = await pool.query(sql, [message_id])
+      return data.rows[0]
+  } catch (error) {
+    console.error("Update Error")
+  }
+}
+/* *****************************
+*   Update message as archived
+* *************************** */
+async function updateMessageArchive(message_id){
+  try {
+      const sql = "UPDATE public.message SET message_archived = true WHERE message_id = $1 RETURNING *"
+      const data = await pool.query(sql, [message_id])
+      return data.rows[0]
+  } catch (error) {
+    console.error("Update Error")
+  }
+}
+/* *****************************
+*   Delete message
+* *************************** */
+async function deleteMessage(message_id){
+  try {
+      const sql = "DELETE FROM public.message WHERE message_id = $1"
+      await pool.query(sql, [message_id])
+  } catch (error) {
+    console.error("Error Deleting Message")
+  }
+}
+/* *****************************
+* Return archived messages using messages_to
+* ***************************** */
+async function getArchivedMessages (message_to) {
+  try {
+    const result = await pool.query(
+      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = true',
+      [message_to])
+    return result.rows
+  } catch (error) {
+    return new Error("No message found")
+  }
+}
+
+/* *****************************
+* Return messages and sender name using messages_to
+* ***************************** */
+async function getMessagesAndName(message_to) {
+  try {
+    const result = await pool.query(
+      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = false',
       [message_to])
     return result.rows
   } catch (error) {
@@ -105,4 +181,6 @@ async function getUnreadMessages (message_to) {
   }
 }
 
-module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountById, updateAccount, updateAccountPassword, newMessage, getUnreadMessages}
+module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountById, updateAccount, updateAccountPassword, 
+  newMessage, getUnreadMessages, getArchivedMessages, getMessagesAndName, getMessage, updateMessageRead, updateMessageArchive,
+  deleteMessage}

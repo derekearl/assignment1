@@ -1,0 +1,46 @@
+<%# Content Heading %>
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <%  }) %>
+   </ul>
+<% } %>
+
+<a href="/account/messages/<%= locals.accountData.account_id %>">Return to Inbox</a>
+
+<table id="messageDisplay" class="messageDisplay">
+    <thead>
+        <tr>
+            <th>Received</th>
+            <th>Subject</th>
+            <th>From</th>
+            <th>Read</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% locals.messagesArray.findLast(function (message) { %>
+            <% let date = message.message_created %>
+            <% let ampm = date.getHours() >= 12 ? 'PM' : 'AM'; %>
+            <% let hour = date.getHours() %>
+            <% if(ampm=='PM') {%>
+                <% hour = hour - 12 %>
+            <% } %>
+            <% let time = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}, ${hour}:${date.getMinutes()}:${date.getSeconds()} ${ampm}` %>
+            <tr>
+                <td><%= time %></td>
+                <td><a href='/account/view-message/<%= message.message_id %>'><%= message.message_subject %></a></td>
+                <td><%= message.message_from_firstname %> <%= message.message_from_lastname %></td>
+                <td><%= message.message_read %></td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>

@@ -252,6 +252,28 @@ validate.checkUpdatePasswordData = async (req, res, next) => {
       return
     }
     next()
-  }
+}
+
+  /* ******************************
+ * Check data and return errors or continue to sending new message
+ * ***************************** */
+  validate.checkReplyMessageData = async (req, res, next) => {
+    const { message_to, message_subject, message_body } = req.body
+    let errors = []
+    errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      let nav = await utilities.getNav()
+      res.render("account/reply-message", {
+        errors,
+        title: message_subject,
+        nav,
+        message_to,
+        message_subject,
+        message_body,
+      })
+      return
+    }
+    next()
+}
 
 module.exports = validate

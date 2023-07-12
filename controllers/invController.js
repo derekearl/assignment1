@@ -142,6 +142,7 @@ invCont.addNewCar = async function(req, res) {
 invCont.getInventoryJSON = async (req, res, next) => {
   const classification_id = parseInt(req.params.classification_id)
   const invData = await invModel.getInventoryByClassificationId(classification_id)
+  console.log(invData)
   if (invData[0].inv_id) {
     return res.json(invData)
   } else {

@@ -1,0 +1,29 @@
+<%# Content Heading %>
+<% if (title) { %>
+    <h1><%= title %></h1>
+<% } else {
+    res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+    <ul class="notice">
+        <% errors.array().forEach(error => { %>
+            <li><%= error.msg %></li>
+        <%  }) %>
+   </ul>
+<% } %>
+
+<p><strong>Subject</strong>: <%= locals.message.message_subject %></p>
+<p><strong>From</strong>: <%= locals.message.message_from %></p>
+<p><strong>Message</strong></p>
+<p><%= locals.message.message_body %></p>
+
+<div class="border-top">
+    <a href="/account/messages/<%= locals.accountData.account_id %>">Return to Inbox</a>
+    <button><a href="/account/reply-message/<%= locals.message.message_id %>">Reply</a></button>
+    <button><a href="/account/mark-read/<%= locals.message.message_id %>">Mark As Read</a></button>
+    <button><a href="/account/archive-message/<%= locals.message.message_id %>">Archive Message</a></button>
+    <button><a href="/account/delete-message/<%= locals.message.message_id %>">Delete Message</a></button>
+</div>
