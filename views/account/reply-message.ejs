@@ -21,7 +21,7 @@
 <form class="form" action="/account/send_reply" method="post">
     <label for="message_to">To:</label><br>
     <select name="message_to" id="message_to">
-        <% let list = [{name:'Admin Manager', value:'15'}, {name:'Happy Employee', value:'14'}, {name:'Basic Client', value:'13'}] %>
+        <% let list = [{name:'Manager User', value:'6'}, {name:'Happy Employee', value:'5'}, {name:'Basic Client', value:'4'}] %>
         <% list.forEach(function (option) {%>
             <% if(option.value == locals.message_to) {%>
                 <option value="<%= option.value %>" selected><%= option.name %></option>

@@ -21,9 +21,9 @@
 <form class="form" action="/account/send_message" method="post">
     <label for="message_to">To:</label><br>
     <select name="message_to" id="message_to">
-        <option value="15">Admin Manager</option>
-        <option value="14">Happy Employee</option>
-        <option value="13">Basic Client</option>
+        <option value="6">Manager User</option>
+        <option value="5">Happy Employee</option>
+        <option value="4">Basic Client</option>
     </select><br>
     <label for="message_subject">Subject:</label><br>
     <input type="text" name="message_subject" id="message_subject" required pattern="^[a-zA-Z ]+$" value="<%= locals.message_subject %>"><br><br>
