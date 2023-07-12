@@ -131,21 +131,11 @@ Util.checkLogin = (req, res, next) => {
 }
 
 /* ****************************************
- *  Decode token
- * ************************************ */
-Util.decodeToken = (token) => {
-  let base64Url = token.split('.')[1]
-  let base64 = base64Url.replace('-','+').replace('_','/')
-  return JSON.parse(atob(base64))
-}
-
-/* ****************************************
  *  Check Login
  * ************************************ */
 Util.checkAccountType = (req, res, next) => {
   if (res.locals.loggedin) {
-    let token = req.cookies.jwt
-    user = Util.decodeToken(token)
+    user = res.locals.accountData
     if(user.account_type != 'Client') {
       next()
     } else {

@@ -27,16 +27,9 @@
         </tr>
     </thead>
     <tbody>
-        <% locals.messagesArray.findLast(function (message) { %>
-            <% let date = message.message_created %>
-            <% let ampm = date.getHours() >= 12 ? 'PM' : 'AM'; %>
-            <% let hour = date.getHours() %>
-            <% if(ampm=='PM') {%>
-                <% hour = hour - 12 %>
-            <% } %>
-            <% let time = `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}, ${hour}:${date.getMinutes()}:${date.getSeconds()} ${ampm}` %>
+        <% locals.messagesArray.forEach(function (message) { %>
             <tr>
-                <td><%= time %></td>
+                <td><%= message.message_created.toLocaleString('en-US', 'narrow')%></td>
                 <td><a href='/account/view-message/<%= message.message_id %>'><%= message.message_subject %></a></td>
                 <td><%= message.message_from_firstname %> <%= message.message_from_lastname %></td>
                 <td><%= message.message_read %></td>

@@ -159,7 +159,7 @@ async function deleteMessage(message_id){
 async function getArchivedMessages (message_to) {
   try {
     const result = await pool.query(
-      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = true',
+      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = true ORDER BY m.message_created desc',
       [message_to])
     return result.rows
   } catch (error) {
@@ -173,7 +173,7 @@ async function getArchivedMessages (message_to) {
 async function getMessagesAndName(message_to) {
   try {
     const result = await pool.query(
-      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = false',
+      'SELECT m.*, a.account_firstname AS message_from_firstname, a.account_lastname AS message_from_lastname FROM public.message m LEFT JOIN public.account a ON m.message_from = a.account_id WHERE m.message_to IN ($1) AND m.message_archived = false ORDER BY m.message_created desc',
       [message_to])
     return result.rows
   } catch (error) {
