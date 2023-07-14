@@ -106,7 +106,7 @@ async function getUnreadMessages(message_to) {
 }
 
 /* *****************************
-* Return messageusing messages_id
+* Return message messages_id
 * ***************************** */
 async function getMessage (message_id) {
   try {
